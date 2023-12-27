@@ -22,9 +22,6 @@ class Arena extends Component {
   playerOneInitialHealth = this.playerOne.health;
   playerTwoInitialHealth = this.playerTwo.health;
 
-  playerOneHealthBar = document.querySelector(`#left-fighter-indicator`);
-  playerTwoHealthBar = document.querySelector(`#right-fighter-indicator`);
-
   coolDownInterval = 10000;
   events = ['keydown', 'keyup'];
 
@@ -60,9 +57,14 @@ class Arena extends Component {
       playerTwoCoolDown,
     } = this.state;
 
-    const { playerOneHealthBar, playerTwoHealthBar } = this;
+    const playerOneHealthBar = document.querySelector(
+      `#left-fighter-indicator`
+    );
+    const playerTwoHealthBar = document.querySelector(
+      `#right-fighter-indicator`
+    );
 
-    // Cooldown
+    // Power strike cooldown reset
 
     if (prevState.playerOneCoolDown !== playerOneCoolDown) {
       setTimeout(() => {
