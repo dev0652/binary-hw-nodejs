@@ -22,6 +22,9 @@ class Arena extends Component {
   playerOneInitialHealth = this.playerOne.health;
   playerTwoInitialHealth = this.playerTwo.health;
 
+  playerOneHealthBar = document.querySelector(`#left-fighter-indicator`);
+  playerTwoHealthBar = document.querySelector(`#right-fighter-indicator`);
+
   coolDownInterval = 10000;
   events = ['keydown', 'keyup'];
 
@@ -39,7 +42,6 @@ class Arena extends Component {
     playerTwoHealth: this.playerTwoInitialHealth,
 
     winner: null,
-    showModal: false,
   };
 
   // **************** Lifecycle ****************
@@ -51,16 +53,30 @@ class Arena extends Component {
   }
 
   componentDidUpdate(_, prevState) {
-    const { playerOneHealth, playerTwoHealth } = this.state;
+    const {
+      playerOneHealth,
+      playerTwoHealth,
+      playerOneCoolDown,
+      playerTwoCoolDown,
+    } = this.state;
 
-    const playerOneHealthBar = document.querySelector(
-      `#left-fighter-indicator`
-    );
-    const playerTwoHealthBar = document.querySelector(
-      `#right-fighter-indicator`
-    );
+    const { playerOneHealthBar, playerTwoHealthBar } = this;
 
-    let winner = null;
+    // Cooldown
+
+    if (prevState.playerOneCoolDown !== playerOneCoolDown) {
+      setTimeout(() => {
+        this.setState({ playerOneCoolDown: false });
+      }, this.coolDownInterval);
+    }
+
+    if (prevState.playerTwoCoolDown !== playerTwoCoolDown) {
+      setTimeout(() => {
+        this.setState({ playerTwoCoolDown: false });
+      }, this.coolDownInterval);
+    }
+
+    // Health indicator update and/or end of fight
 
     if (prevState.playerOneHealth !== playerOneHealth) {
       if (playerOneHealth > 0) {
@@ -69,7 +85,7 @@ class Arena extends Component {
         }%`;
       } else {
         playerOneHealthBar.style.width = '0%';
-        winner = this.playerTwo.name;
+        this.setState({ winner: this.playerTwo.name });
       }
     }
 
@@ -80,13 +96,8 @@ class Arena extends Component {
         }%`;
       } else {
         playerTwoHealthBar.style.width = '0%';
-        winner = this.playerOne.name;
+        this.setState({ winner: this.playerOne.name });
       }
-    }
-
-    if (winner) {
-      this.setState({ winner });
-      this.setState({ showModal: true });
     }
   }
 
@@ -134,7 +145,6 @@ class Arena extends Component {
   keyPressHandler = (event) => {
     const playerOne = this.playerOne;
     const playerTwo = this.playerTwo;
-    const coolDownInterval = this.coolDownInterval;
 
     const {
       pressedCombo1Keys,
@@ -151,57 +161,7 @@ class Arena extends Component {
 
     if (type === 'keydown') {
       //
-      // Player 1 combo
-      const oneOfCombo1 =
-        code === crit1[0] || code === crit1[1] || code === crit1[2];
-
-      if (
-        !playerOneCoolDown &&
-        oneOfCombo1 &&
-        !pressedCombo1Keys.includes(code)
-      ) {
-        this.setState((prevState) => {
-          return { pressedCombo1Keys: prevState.pressedCombo1Keys.push(code) };
-        });
-      }
-
-      if (pressedCombo1Keys.length === 3) {
-        const damage = playerOne.attack * 2;
-        this.healthIndicatorUpdater(playerOne, damage);
-        this.setState({ pressedCombo1Keys: [] });
-
-        this.setState({ playerOneCoolDown: true });
-
-        setTimeout(() => {
-          this.setState({ playerOneCoolDown: false });
-        }, coolDownInterval);
-      }
-
-      // Player 2 combo
-      const oneOfCombo2 =
-        code === crit2[0] || code === crit2[1] || code === crit2[2];
-
-      if (
-        !playerTwoCoolDown &&
-        oneOfCombo2 &&
-        !pressedCombo2Keys.includes(code)
-      ) {
-        this.setState((prevState) => {
-          return { pressedCombo2Keys: prevState.pressedCombo2Keys.push(code) };
-        });
-      }
-
-      if (pressedCombo2Keys.length === 3) {
-        const damage = playerTwo.attack * 2;
-        this.healthIndicatorUpdater(playerTwo, damage);
-        this.setState({ pressedCombo2Keys: [] });
-
-        this.setState({ playerTwoCoolDown: true });
-
-        setTimeout(() => {
-          this.setState({ playerTwoCoolDown: false });
-        }, coolDownInterval);
-      }
+      // REGULAR ATTACKS
 
       // Player 1 regular attack
       if (!playerOneBlocks && code === PlayerOneAttack) {
@@ -225,14 +185,75 @@ class Arena extends Component {
         });
       }
 
-      // Blocks
+      // BLOCKS
       if (code === PlayerOneBlock) this.setState({ playerOneBlocks: true });
       if (code === PlayerTwoBlock) this.setState({ playerTwoBlocks: true });
+
+      // COMBOS
+
+      // Player 1 combo
+
+      // Track if one of combo keys is pressed:
+      const oneOfCombo1 =
+        code === crit1[0] || code === crit1[1] || code === crit1[2];
+
+      // If pressed, add the key to player's combo array:
+      const condition =
+        !playerOneCoolDown && !pressedCombo1Keys.includes(code) && oneOfCombo1;
+
+      if (condition) {
+        this.setState((prevState) => {
+          return { pressedCombo1Keys: prevState.pressedCombo1Keys.push(code) };
+        });
+      }
+
+      // Upon complete combo
+      if (pressedCombo1Keys.length === 3) {
+        const damage = playerOne.attack * 2;
+
+        this.setState((prevState) => {
+          return {
+            playerTwoHealth: prevState.playerTwoHealth - damage,
+            pressedCombo1Keys: [],
+            playerOneCoolDown: true,
+          };
+        });
+      }
+
+      // Player 2 combo
+
+      // Track if one of combo keys is pressed:
+      const oneOfCombo2 =
+        code === crit2[0] || code === crit2[1] || code === crit2[2];
+
+      // If pressed, add the key to player's combo array:
+      if (
+        !playerTwoCoolDown &&
+        oneOfCombo2 &&
+        !pressedCombo2Keys.includes(code)
+      ) {
+        this.setState((prevState) => {
+          return { pressedCombo2Keys: prevState.pressedCombo2Keys.push(code) };
+        });
+      }
+
+      // Upon complete combo
+      if (pressedCombo2Keys.length === 3) {
+        const damage = playerTwo.attack * 2;
+
+        this.setState((prevState) => {
+          return {
+            playerOneHealth: prevState.playerOneHealth - damage,
+            pressedCombo2Keys: [],
+            playerTwoCoolDown: true,
+          };
+        });
+      }
     }
 
     if (type === 'keyup') {
       //
-      // Remove key code from the combo log on keyup - player 1
+      // Remove key code from the combo array on keyup - player 1
       if (pressedCombo1Keys.includes(code)) {
         const index = pressedCombo1Keys.indexOf(code);
 
@@ -243,7 +264,7 @@ class Arena extends Component {
         });
       }
 
-      // Remove key code from the combo log on keyup - player 2
+      // Remove key code from the combo array on keyup - player 2
       if (pressedCombo2Keys.includes(code)) {
         const index = pressedCombo2Keys.indexOf(code);
 
@@ -254,6 +275,7 @@ class Arena extends Component {
         });
       }
 
+      // Lift block
       if (code === PlayerOneBlock) this.setState({ playerOneBlocks: false });
       if (code === PlayerTwoBlock) this.setState({ PlayerTwoBlocks: false });
     }
@@ -263,11 +285,11 @@ class Arena extends Component {
 
   render() {
     const { fighter1, fighter2 } = this.props.rivals;
-    const { showModal, winner } = this.state;
+    const { winner } = this.state;
 
     return (
       <div className="arena___root">
-        {showModal && <Modal winner={winner} onClose={this.props.onGameOver} />}
+        {winner && <Modal winner={winner} onClose={this.props.onGameOver} />}
 
         <div className="arena___fight-status">
           {/*  */}
