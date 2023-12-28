@@ -10,54 +10,22 @@
   background-position: center;
 }
 
-.arena___battlefield {
-  display: flex;
-  justify-content: space-around;
-  margin-bottom: 60px;
-}
-
-.arena___right-fighter img {
-  transform: scaleX(-1);
-}
-
-.arena___fighter img {
-  height: 480px;
-}
-
 .arena___fight-status {
   display: flex;
   margin: 30px;
   justify-content: center;
 }
 
-.arena___fighter-name {
-  color: black;
-  -webkit-text-fill-color: white;
-  -webkit-text-stroke-width: 1px;
-  font-size: 26px;
-  font-family: 'Arial Black';
-  font-weight: 700;
-}
-
-.arena___fighter-indicator {
-  width: 100%;
+.arena___battlefield {
   display: flex;
-  align-items: center;
-  flex-direction: column;
-  margin: 0 30px;
+  justify-content: space-around;
+  margin-bottom: 60px;
 }
 
-.arena___health-indicator {
-  width: 100%;
-  height: 25px;
-  border: 2px solid;
-  border-radius: 5px;
-  margin: 0 10px;
-  overflow: hidden;
-}
+.arena___versus-sign {
+  margin: 30px 0;
 
-.arena___health-bar {
-  height: 100%;
-  width: 100%;
-  background-color: #ebd759;
+  display: block;
+  height: 50px;
+  max-height: 50px;
 }

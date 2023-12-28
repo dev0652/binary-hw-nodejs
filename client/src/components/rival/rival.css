@@ -1,0 +1,7 @@
+.fighter-preview___img {
+  height: 480px;
+}
+
+.arena___right-fighter .fighter-preview___img {
+  transform: scaleX(-1);
+}

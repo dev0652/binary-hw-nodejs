@@ -2,6 +2,9 @@ import React, { Component } from 'react';
 import './arena.css';
 import controls from '../../constants/controls';
 import Modal from '../modal';
+import { Indicator } from '../indicator';
+import { Rival } from '../rival';
+import vsImage from '../../resources/versus.png';
 
 const {
   PlayerOneAttack,
@@ -294,49 +297,17 @@ class Arena extends Component {
         {winner && <Modal winner={winner} onClose={this.props.onGameOver} />}
 
         <div className="arena___fight-status">
-          {/*  */}
-          <div className="arena___fighter-indicator">
-            <span className="arena___fighter-name">{fighter1.name}</span>
-            <div className="arena___health-indicator">
-              <div
-                className="arena___health-bar"
-                id="left-fighter-indicator"
-              ></div>
-            </div>
-          </div>
+          <Indicator side="left" name={fighter1.name} />
 
-          <div className="arena___versus-sign"></div>
+          <img className="arena___versus-sign" src={vsImage} alt="versus" />
 
-          <div className="arena___fighter-indicator">
-            <span className="arena___fighter-name">{fighter2.name}</span>
-            <div className="arena___health-indicator">
-              <div
-                className="arena___health-bar"
-                id="right-fighter-indicator"
-              ></div>
-            </div>
-          </div>
+          <Indicator side="right" name={fighter2.name} />
         </div>
 
         <div className="arena___battlefield">
           {/*  */}
-          <div className="arena___fighter arena___left-fighter">
-            <img
-              className="fighter-preview___img"
-              src={fighter1.source}
-              title={fighter1.name}
-              alt={fighter1.name}
-            />
-          </div>
-
-          <div className="arena___fighter arena___right-fighter">
-            <img
-              className="fighter-preview___img"
-              src={fighter2.source}
-              title={fighter2.name}
-              alt={fighter2.name}
-            />
-          </div>
+          <Rival side="left" fighter={fighter1} />
+          <Rival side="right" fighter={fighter2} />
         </div>
       </div>
     );
