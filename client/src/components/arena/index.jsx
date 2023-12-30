@@ -5,6 +5,7 @@ import Modal from '../modal';
 import { Indicator } from '../indicator';
 import { Rival } from '../rival';
 import vsImage from '../../resources/versus.png';
+import { saveFight } from '../../services/domainRequest/fightRequest';
 
 const {
   PlayerOneAttack,
@@ -42,6 +43,12 @@ class Arena extends Component {
     playerTwoHealth: this.playerTwoInitialHealth,
 
     winner: null,
+
+    fightLog: {
+      fighter1: this.playerOne.id,
+      fighter2: this.playerTwo.id,
+      log: [],
+    },
   };
 
   // **************** Lifecycle ****************
@@ -58,6 +65,7 @@ class Arena extends Component {
       playerTwoHealth,
       playerOneCoolDown,
       playerTwoCoolDown,
+      fightLog,
     } = this.state;
 
     const playerOneHealthBar = document.querySelector(
@@ -68,7 +76,6 @@ class Arena extends Component {
     );
 
     // Power strike cooldown reset
-
     if (prevState.playerOneCoolDown !== playerOneCoolDown) {
       setTimeout(() => {
         this.setState({ playerOneCoolDown: false });
@@ -82,7 +89,6 @@ class Arena extends Component {
     }
 
     // Health indicator update and/or end of fight
-
     if (prevState.playerOneHealth !== playerOneHealth) {
       if (playerOneHealth > 0) {
         playerOneHealthBar.style.width = `${
@@ -104,18 +110,29 @@ class Arena extends Component {
         this.setState({ winner: this.playerOne.name });
       }
     }
+
+    // if (fightLog.log.length === 0) {
+    //   console.warn('Fight log not saving.. :(((');
+    // }
   }
 
-  componentWillUnmount() {
+  async componentWillUnmount() {
     this.events.forEach((eventType) =>
       document.removeEventListener(eventType, this.keyPressHandler)
     );
+
+    const fightLog = await saveFight(this.state.fightLog);
+    const error =
+      "Sorry, couldn't retrieve fight log. \nNo log will  be saved for this fight";
+
+    if (this.state.fightLog.log.length === 0 || !fightLog) alert(error);
   }
 
   // **************** Methods ****************
 
   getChance(min, max) {
-    return Math.random() * (max - min) + min;
+    const chance = Math.random() * (max - min) + min;
+    return chance.toFixed(2);
   }
 
   getHitPower(player) {
@@ -147,13 +164,41 @@ class Arena extends Component {
     return damage;
   }
 
+  makeRoundLog(player, damage, prevState) {
+    // player: number
+
+    const { playerOneHealth, playerTwoHealth } = prevState;
+
+    const roundLog = {
+      fighter1Shot: 0,
+      fighter2Shot: 0,
+      fighter1Health: playerOneHealth,
+      fighter2Health: playerTwoHealth,
+    };
+
+    const isPlayer1 = player === 1;
+    const opponent = isPlayer1 ? 2 : 1;
+
+    // Log object keys
+    const playerStrikeKey = `fighter${player}Shot`;
+    const opponentHealthKey = `fighter${opponent}Health`;
+
+    const opponentHealth = isPlayer1 ? playerTwoHealth : playerOneHealth;
+    const resultingOpponentHealth = (opponentHealth - damage).toFixed(2);
+
+    roundLog[playerStrikeKey] = damage;
+    roundLog[opponentHealthKey] = resultingOpponentHealth;
+
+    return roundLog;
+  }
+
   keyPressHandler = (event) => {
-    const playerOne = this.playerOne;
-    const playerTwo = this.playerTwo;
+    const { playerOne, playerTwo } = this;
 
     const {
       pressedCombo1Keys,
       pressedCombo2Keys,
+
       playerOneCoolDown,
       playerTwoCoolDown,
       playerOneBlocks,
@@ -175,7 +220,20 @@ class Arena extends Component {
           : this.getHitPower(playerOne);
 
         this.setState((prevState) => {
-          return { playerTwoHealth: prevState.playerTwoHealth - damage };
+          const { playerTwoHealth, fightLog } = prevState;
+
+          const roundLog = this.makeRoundLog(1, damage, prevState);
+
+          const { log } = fightLog;
+          const newLogArray = [...log];
+          newLogArray.push(roundLog);
+
+          return {
+            playerTwoHealth: playerTwoHealth - damage,
+            fightLog: {
+              log: newLogArray,
+            },
+          };
         });
       }
 
@@ -186,7 +244,20 @@ class Arena extends Component {
           : this.getHitPower(playerTwo);
 
         this.setState((prevState) => {
-          return { playerOneHealth: prevState.playerOneHealth - damage };
+          const { playerOneHealth, fightLog } = prevState;
+
+          const roundLog = this.makeRoundLog(2, damage, prevState);
+
+          const { log } = fightLog;
+          const newLogArray = [...log];
+          newLogArray.push(roundLog);
+
+          return {
+            playerOneHealth: playerOneHealth - damage,
+            fightLog: {
+              log: newLogArray,
+            },
+          };
         });
       }
 
@@ -217,10 +288,20 @@ class Arena extends Component {
         const damage = playerOne.attack * 2;
 
         this.setState((prevState) => {
+          const { playerTwoHealth, fightLog } = prevState;
+          const roundLog = this.makeRoundLog(1, damage, prevState);
+
+          const { log } = fightLog;
+          const newLogArray = [...log];
+          newLogArray.push(roundLog);
+
           return {
-            playerTwoHealth: prevState.playerTwoHealth - damage,
+            playerTwoHealth: playerTwoHealth - damage,
             pressedCombo1Keys: [],
             playerOneCoolDown: true,
+            fightLog: {
+              log: newLogArray,
+            },
           };
         });
       }
@@ -247,10 +328,21 @@ class Arena extends Component {
         const damage = playerTwo.attack * 2;
 
         this.setState((prevState) => {
+          const { playerOneHealth, fightLog } = prevState;
+
+          const roundLog = this.makeRoundLog(2, damage, prevState);
+
+          const { log } = fightLog;
+          const newLogArray = [...log];
+          newLogArray.push(roundLog);
+
           return {
-            playerOneHealth: prevState.playerOneHealth - damage,
+            playerOneHealth: playerOneHealth - damage,
             pressedCombo2Keys: [],
             playerTwoCoolDown: true,
+            fightLog: {
+              log: newLogArray,
+            },
           };
         });
       }
@@ -298,14 +390,11 @@ class Arena extends Component {
 
         <div className="arena___fight-status">
           <Indicator side="left" name={fighter1.name} />
-
           <img className="arena___versus-sign" src={vsImage} alt="versus" />
-
           <Indicator side="right" name={fighter2.name} />
         </div>
 
         <div className="arena___battlefield">
-          {/*  */}
           <Rival side="left" fighter={fighter1} />
           <Rival side="right" fighter={fighter2} />
         </div>
