@@ -1,20 +1,15 @@
 import React, { Component } from 'react';
 import './arena.css';
-import controls from '../../constants/controls';
 import Modal from '../modal';
 import { Indicator } from '../indicator';
 import { Rival } from '../rival';
 import vsImage from '../../resources/versus.png';
 import { saveFight } from '../../services/domainRequest/fightRequest';
 
-const {
-  PlayerOneAttack,
-  PlayerOneBlock,
-  PlayerTwoAttack,
-  PlayerTwoBlock,
-  PlayerOneCriticalHitCombination: crit1,
-  PlayerTwoCriticalHitCombination: crit2,
-} = controls;
+import controls from '../../constants/controls';
+
+const { PlayerOneAttack, PlayerOneBlock, PlayerTwoAttack, PlayerTwoBlock } =
+  controls;
 
 // ******************************************
 
