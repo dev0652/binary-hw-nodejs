@@ -13,13 +13,17 @@ The app also logs player moves and saves the log in the database upon the end of
 
 # What I did
 
+Backend:
+
 - Authentication endpoints
 - User endpoints
 - Fighter endpoints
 - Fight log endpoints
 - Validation (for POST and PUT requests) and error handling
 
-- Fight sequence (listening for key press and release, logging of moves updating players' health bars)
+Frontend:
+
+- Fight sequence (listening for key presses and releases, logging of moves, updating players' health bars, etc.)
 - Modal window
 
 # Rules and controls
