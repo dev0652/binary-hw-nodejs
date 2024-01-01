@@ -74,7 +74,6 @@ class Arena extends Component {
     );
 
     // Power strike
-
     if (
       prevState.pressedComboOneKeys !== pressedComboOneKeys &&
       pressedComboOneKeys.length === 3
@@ -218,11 +217,11 @@ class Arena extends Component {
 
   handleCombo(attackingPlayer, code) {
     const isPlayerOne = attackingPlayer === this.playerOne;
-    const attacker = isPlayerOne ? 'One' : 'Two';
+    const player = isPlayerOne ? 'One' : 'Two';
 
-    const coolDownKey = `player${attacker}CoolDown`;
-    const pressedComboKey = `pressedCombo${attacker}Keys`;
-    const combinationKey = `Player${attacker}CriticalHitCombination`;
+    const coolDownKey = `player${player}CoolDown`;
+    const pressedComboArrayKey = `pressedCombo${player}Keys`;
+    const combinationKey = `Player${player}CriticalHitCombination`;
 
     const combination = controls[combinationKey];
 
@@ -233,7 +232,7 @@ class Arena extends Component {
       code === combination[2];
 
     const isPlayerInCoolDown = this.state[coolDownKey];
-    const pressedComboKeys = this.state[pressedComboKey];
+    const pressedComboKeys = this.state[pressedComboArrayKey];
 
     const isCombo =
       !isPlayerInCoolDown &&
@@ -243,12 +242,12 @@ class Arena extends Component {
     // If pressed, add the key to player's combo array:
     if (isCombo) {
       this.setState((prevState) => {
-        const currentArray = prevState[pressedComboKey];
+        const currentArray = prevState[pressedComboArrayKey];
         const updatedArray = [...currentArray];
         updatedArray.push(code);
 
         return {
-          [pressedComboKey]: updatedArray,
+          [pressedComboArrayKey]: updatedArray,
         };
       });
     }
@@ -298,35 +297,28 @@ class Arena extends Component {
     const isPlayerOne = player === this.playerOne;
     const attacker = isPlayerOne ? 'One' : 'Two';
 
-    const pressedComboKey = `pressedCombo${attacker}Keys`;
+    const pressedComboArrayKey = `pressedCombo${attacker}Keys`;
 
-    const pressedComboKeys = this.state[pressedComboKey];
+    const pressedComboKeys = this.state[pressedComboArrayKey];
     const index = pressedComboKeys.indexOf(code);
 
     this.setState((prevState) => {
-      const updatedArray = prevState[pressedComboKey].toSpliced(index, 1);
+      const updatedArray = prevState[pressedComboArrayKey].toSpliced(index, 1);
 
-      return { [pressedComboKey]: updatedArray };
+      return { [pressedComboArrayKey]: updatedArray };
     });
   }
 
-  keyPressHandler(event) {
+  keyPressHandler = (event) => {
     const { playerOne, playerTwo } = this;
-
-    const {
-      pressedComboOneKeys,
-      pressedComboTwoKeys,
-      playerOneBlocks,
-      playerTwoBlocks,
-    } = this.state;
-
     const { type, code, repeat } = event;
 
     if (repeat) return;
 
     if (type === 'keydown') {
-      //
-      // PLAYER !
+      const { playerOneBlocks, playerTwoBlocks } = this.state;
+
+      // PLAYER 1
 
       // Player 1 regular attack
       if (!playerOneBlocks && code === PlayerOneAttack) {
@@ -366,6 +358,7 @@ class Arena extends Component {
     }
 
     if (type === 'keyup') {
+      const { pressedComboOneKeys, pressedComboTwoKeys } = this.state;
       //
       // Remove key from player combo array on keyup
       if (pressedComboOneKeys.includes(code))
@@ -379,7 +372,7 @@ class Arena extends Component {
 
       if (code === PlayerTwoBlock) this.setState({ PlayerTwoBlocks: false });
     }
-  }
+  };
 
   // **************** Render ****************
 
