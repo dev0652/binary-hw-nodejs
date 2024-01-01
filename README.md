@@ -1,9 +1,26 @@
 # NodeJS test
 
 This a test assignment I've done for a coding academy. Although I failed to deliver it on time, I still went on and completed it.
-The test is a simple, unanimated fighting game.
+The test is a simple, unanimated fighting game built with React and utilizes class components.
 
 ![Screenshot of the fight](/assets/screenshot.jpeg)
+
+# Features
+
+In order to play, a user is required to create an account or log in to an existing one.
+Upon login, players can pick pre-defined fighter characters or create new ones with the desired specs.
+The app also logs player moves and saves the log in the database upon the end of the fight.
+
+# What I did
+
+- Authentication endpoints
+- User endpoints
+- Fighter endpoints
+- Fight log endpoints
+- Validation (for POST and PUT requests) and error handling
+
+- Fight sequence (listening for key press and release, logging of moves updating players' health bars)
+- Modal window
 
 # Rules and controls
 
