@@ -76,7 +76,7 @@ class Arena extends Component {
     // Power strike
     if (pressedComboOneKeys.length === 3) {
       const isCombo = true;
-      const damage = getHitPower(playerOne, isCombo);
+      const damage = this.getHitPower(playerOne, isCombo);
 
       this.setState((prevState) =>
         this.handleStrike(prevState, damage, playerOne, isCombo)
@@ -85,7 +85,7 @@ class Arena extends Component {
 
     if (pressedComboTwoKeys.length === 3) {
       const isCombo = true;
-      const damage = getHitPower(playerTwo, isCombo);
+      const damage = this.getHitPower(playerTwo, isCombo);
 
       this.setState((prevState) =>
         this.handleStrike(prevState, damage, playerTwo, isCombo)
