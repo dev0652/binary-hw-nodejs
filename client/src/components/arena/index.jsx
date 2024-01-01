@@ -365,7 +365,7 @@ class Arena extends Component {
       // Release block
       if (code === PlayerOneBlock) this.setState({ playerOneBlocks: false });
 
-      if (code === PlayerTwoBlock) this.setState({ PlayerTwoBlocks: false });
+      if (code === PlayerTwoBlock) this.setState({ playerTwoBlocks: false });
     }
   };
 
