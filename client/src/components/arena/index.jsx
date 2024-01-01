@@ -74,24 +74,18 @@ class Arena extends Component {
     );
 
     // Power strike
-    if (
-      prevState.pressedComboOneKeys !== pressedComboOneKeys &&
-      pressedComboOneKeys.length === 3
-    ) {
-      const damage = playerOne.attack * 2;
+    if (pressedComboOneKeys.length === 3) {
       const isCombo = true;
+      const damage = getHitPower(playerOne, isCombo);
 
       this.setState((prevState) =>
         this.handleStrike(prevState, damage, playerOne, isCombo)
       );
     }
 
-    if (
-      prevState.pressedComboTwoKeys !== pressedComboTwoKeys &&
-      pressedComboTwoKeys.length === 3
-    ) {
-      const damage = playerTwo.attack * 2;
+    if (pressedComboTwoKeys.length === 3) {
       const isCombo = true;
+      const damage = getHitPower(playerTwo, isCombo);
 
       this.setState((prevState) =>
         this.handleStrike(prevState, damage, playerTwo, isCombo)
@@ -155,8 +149,8 @@ class Arena extends Component {
     return chance;
   }
 
-  getHitPower(player) {
-    const criticalHitChance = this.getChance(1, 2);
+  getHitPower(player, isCombo = false) {
+    const criticalHitChance = isCombo ? 2 : this.getChance(1, 2);
     const hitPower = (player.power / 10) * criticalHitChance;
     const normalizedHitPower = +hitPower.toFixed(2);
 
@@ -253,8 +247,9 @@ class Arena extends Component {
     }
   }
 
-  handleStrike(prevState, damage, attackingPlayer, isCombo = false) {
-    const isPlayerOne = attackingPlayer === this.playerOne;
+  handleStrike(prevState, damage, player, isCombo = false) {
+    isCombo && console.log('Power strike!');
+    const isPlayerOne = player === this.playerOne;
 
     const playerNo = isPlayerOne ? 1 : 2;
     const attacker = isPlayerOne ? 'One' : 'Two';
@@ -266,11 +261,11 @@ class Arena extends Component {
     newLogArray.push(roundLog);
 
     // Get object keys
-    const defenderHealthKey = `player${defender}Health`;
     const attackerCoolDownKey = `player${attacker}CoolDown`;
-    const attackerComboKey = `pressedCombo${playerNo}Keys`;
+    const attackerComboKey = `pressedCombo${attacker}Keys`;
+    const defenderHealthKey = `player${defender}Health`;
 
-    // Get health defender's health
+    // Get defender's health
     const defenderHealth = prevState[defenderHealthKey];
     const difference = +(defenderHealth - damage).toFixed(2);
 
@@ -283,9 +278,9 @@ class Arena extends Component {
     };
 
     const comboState = {
+      ...nonComboState,
       [attackerComboKey]: [],
       [attackerCoolDownKey]: true,
-      ...nonComboState,
     };
 
     const modifiedState = isCombo ? comboState : nonComboState;
