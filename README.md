@@ -1,11 +1,13 @@
 # NodeJS test
 
-This a test assignment I've done for a coding academy. Alhough I failed to deliver it on time, I still went on and completed it.
-The test is a simple, unanimaated fighting game.
+This a test assignment I've done for a coding academy. Although I failed to deliver it on time, I still went on and completed it.
+The test is a simple, unanimated fighting game.
+
+![Screenshot of the fight](/assets/screenshot.jpeg)
 
 # Rules and controls
 
-Players hit each other with the **A** (left player) and **J** (right player) keys. 
+Players hit each other with the **A** (left player) and **J** (right player) keys.
 
 Players can block strikes by pressing the **D** and **L** keys, respectively. If the force of the block is greater than the force of the attack, the attack will be dodged.
 None of the fighters can strike while in a block.
@@ -25,4 +27,5 @@ cd ..
 npm install
 npm start
 ```
+
 Then open [http://localhost:3080](http://localhost:3080)
