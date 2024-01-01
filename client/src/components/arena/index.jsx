@@ -30,8 +30,8 @@ class Arena extends Component {
   events = ['keydown', 'keyup'];
 
   state = {
-    pressedCombo1Keys: [],
-    pressedCombo2Keys: [],
+    pressedComboOneKeys: [],
+    pressedComboTwoKeys: [],
 
     playerOneCoolDown: false,
     playerTwoCoolDown: false,
@@ -60,12 +60,15 @@ class Arena extends Component {
   }
 
   componentDidUpdate(_, prevState) {
+    const { playerOne, playerTwo } = this;
+
     const {
       playerOneHealth,
       playerTwoHealth,
       playerOneCoolDown,
       playerTwoCoolDown,
-      fightLog,
+      pressedComboOneKeys,
+      pressedComboTwoKeys,
     } = this.state;
 
     const playerOneHealthBar = document.querySelector(
@@ -74,6 +77,32 @@ class Arena extends Component {
     const playerTwoHealthBar = document.querySelector(
       `#right-fighter-indicator`
     );
+
+    // Power strike
+
+    if (
+      prevState.pressedComboOneKeys !== pressedComboOneKeys &&
+      pressedComboOneKeys.length === 3
+    ) {
+      const damage = playerOne.attack * 2;
+      const isCombo = true;
+
+      this.setState((prevState) =>
+        this.handleStrike(prevState, damage, playerOne, isCombo)
+      );
+    }
+
+    if (
+      prevState.pressedComboTwoKeys !== pressedComboTwoKeys &&
+      pressedComboTwoKeys.length === 3
+    ) {
+      const damage = playerTwo.attack * 2;
+      const isCombo = true;
+
+      this.setState((prevState) =>
+        this.handleStrike(prevState, damage, playerTwo, isCombo)
+      );
+    }
 
     // Power strike cooldown reset
     if (prevState.playerOneCoolDown !== playerOneCoolDown) {
@@ -110,10 +139,6 @@ class Arena extends Component {
         this.setState({ winner: this.playerOne.name });
       }
     }
-
-    // if (fightLog.log.length === 0) {
-    //   console.warn('Fight log not saving.. :(((');
-    // }
   }
 
   async componentWillUnmount() {
@@ -132,21 +157,24 @@ class Arena extends Component {
 
   getChance(min, max) {
     const chance = Math.random() * (max - min) + min;
-    return chance.toFixed(2);
+
+    return chance;
   }
 
   getHitPower(player) {
     const criticalHitChance = this.getChance(1, 2);
     const hitPower = (player.power / 10) * criticalHitChance;
+    const normalizedHitPower = +hitPower.toFixed(2);
 
-    return hitPower;
+    return normalizedHitPower;
   }
 
   getBlockPower(player) {
     const dodgeChance = this.getChance(1, 2);
     const blockPower = player.defense * dodgeChance;
+    const normalizedBlockPower = +blockPower.toFixed(2);
 
-    return blockPower;
+    return normalizedBlockPower;
   }
 
   getDamage(attacker, defender) {
@@ -169,6 +197,7 @@ class Arena extends Component {
 
     const { playerOneHealth, playerTwoHealth } = prevState;
 
+    // Dummy log object
     const roundLog = {
       fighter1Shot: 0,
       fighter2Shot: 0,
@@ -184,7 +213,7 @@ class Arena extends Component {
     const opponentHealthKey = `fighter${opponent}Health`;
 
     const opponentHealth = isPlayer1 ? playerTwoHealth : playerOneHealth;
-    const resultingOpponentHealth = (opponentHealth - damage).toFixed(2);
+    const resultingOpponentHealth = +(opponentHealth - damage).toFixed(2);
 
     roundLog[playerStrikeKey] = damage;
     roundLog[opponentHealthKey] = resultingOpponentHealth;
@@ -192,15 +221,106 @@ class Arena extends Component {
     return roundLog;
   }
 
-  keyPressHandler = (event) => {
+  handleCombo(attackingPlayer, code) {
+    const isPlayerOne = attackingPlayer === this.playerOne;
+    const attacker = isPlayerOne ? 'One' : 'Two';
+
+    const coolDownKey = `player${attacker}CoolDown`;
+    const pressedComboKey = `pressedCombo${attacker}Keys`;
+    const combinationKey = `Player${attacker}CriticalHitCombination`;
+
+    const combination = controls[combinationKey];
+
+    // Is one of combo keys pressed?
+    const oneOfComboKeysPressed =
+      code === combination[0] ||
+      code === combination[1] ||
+      code === combination[2];
+
+    const isPlayerInCoolDown = this.state[coolDownKey];
+    const pressedComboKeys = this.state[pressedComboKey];
+
+    const isCombo =
+      !isPlayerInCoolDown &&
+      !pressedComboKeys.includes(code) &&
+      oneOfComboKeysPressed;
+
+    // If pressed, add the key to player's combo array:
+    if (isCombo) {
+      this.setState((prevState) => {
+        const currentArray = prevState[pressedComboKey];
+        const updatedArray = [...currentArray];
+        updatedArray.push(code);
+
+        return {
+          [pressedComboKey]: updatedArray,
+        };
+      });
+    }
+  }
+
+  handleStrike(prevState, damage, attackingPlayer, isCombo = false) {
+    const isPlayerOne = attackingPlayer === this.playerOne;
+
+    const playerNo = isPlayerOne ? 1 : 2;
+    const attacker = isPlayerOne ? 'One' : 'Two';
+    const defender = !isPlayerOne ? 'One' : 'Two';
+
+    const roundLog = this.makeRoundLog(playerNo, damage, prevState);
+
+    const newLogArray = [...prevState.fightLog.log];
+    newLogArray.push(roundLog);
+
+    // Get object keys
+    const defenderHealthKey = `player${defender}Health`;
+    const attackerCoolDownKey = `player${attacker}CoolDown`;
+    const attackerComboKey = `pressedCombo${playerNo}Keys`;
+
+    // Get health defender's health
+    const defenderHealth = prevState[defenderHealthKey];
+    const difference = +(defenderHealth - damage).toFixed(2);
+
+    // Compose resulting state object
+    const nonComboState = {
+      [defenderHealthKey]: difference,
+      fightLog: {
+        log: newLogArray,
+      },
+    };
+
+    const comboState = {
+      [attackerComboKey]: [],
+      [attackerCoolDownKey]: true,
+      ...nonComboState,
+    };
+
+    const modifiedState = isCombo ? comboState : nonComboState;
+
+    return modifiedState;
+  }
+
+  handleComboKeyRelease(player, code) {
+    const isPlayerOne = player === this.playerOne;
+    const attacker = isPlayerOne ? 'One' : 'Two';
+
+    const pressedComboKey = `pressedCombo${attacker}Keys`;
+
+    const pressedComboKeys = this.state[pressedComboKey];
+    const index = pressedComboKeys.indexOf(code);
+
+    this.setState((prevState) => {
+      const updatedArray = prevState[pressedComboKey].toSpliced(index, 1);
+
+      return { [pressedComboKey]: updatedArray };
+    });
+  }
+
+  keyPressHandler(event) {
     const { playerOne, playerTwo } = this;
 
     const {
-      pressedCombo1Keys,
-      pressedCombo2Keys,
-
-      playerOneCoolDown,
-      playerTwoCoolDown,
+      pressedComboOneKeys,
+      pressedComboTwoKeys,
       playerOneBlocks,
       playerTwoBlocks,
     } = this.state;
@@ -211,7 +331,7 @@ class Arena extends Component {
 
     if (type === 'keydown') {
       //
-      // REGULAR ATTACKS
+      // PLAYER !
 
       // Player 1 regular attack
       if (!playerOneBlocks && code === PlayerOneAttack) {
@@ -219,23 +339,18 @@ class Arena extends Component {
           ? this.getDamage(playerOne, playerTwo)
           : this.getHitPower(playerOne);
 
-        this.setState((prevState) => {
-          const { playerTwoHealth, fightLog } = prevState;
-
-          const roundLog = this.makeRoundLog(1, damage, prevState);
-
-          const { log } = fightLog;
-          const newLogArray = [...log];
-          newLogArray.push(roundLog);
-
-          return {
-            playerTwoHealth: playerTwoHealth - damage,
-            fightLog: {
-              log: newLogArray,
-            },
-          };
-        });
+        this.setState((prevState) =>
+          this.handleStrike(prevState, damage, playerOne)
+        );
       }
+
+      // Player 1 block
+      if (code === PlayerOneBlock) this.setState({ playerOneBlocks: true });
+
+      // Player 1 combo
+      this.handleCombo(playerOne, code);
+
+      // PLAYER 2
 
       // Player 2 regular attack
       if (!playerTwoBlocks && code === PlayerTwoAttack) {
@@ -243,140 +358,33 @@ class Arena extends Component {
           ? this.getDamage(playerTwo, playerOne)
           : this.getHitPower(playerTwo);
 
-        this.setState((prevState) => {
-          const { playerOneHealth, fightLog } = prevState;
-
-          const roundLog = this.makeRoundLog(2, damage, prevState);
-
-          const { log } = fightLog;
-          const newLogArray = [...log];
-          newLogArray.push(roundLog);
-
-          return {
-            playerOneHealth: playerOneHealth - damage,
-            fightLog: {
-              log: newLogArray,
-            },
-          };
-        });
+        this.setState((prevState) =>
+          this.handleStrike(prevState, damage, playerTwo)
+        );
       }
 
-      // BLOCKS
-      if (code === PlayerOneBlock) this.setState({ playerOneBlocks: true });
+      // Player 2 block
       if (code === PlayerTwoBlock) this.setState({ playerTwoBlocks: true });
 
-      // COMBOS
-
-      // Player 1 combo
-
-      // Track if one of combo keys is pressed:
-      const oneOfCombo1 =
-        code === crit1[0] || code === crit1[1] || code === crit1[2];
-
-      // If pressed, add the key to player's combo array:
-      const condition =
-        !playerOneCoolDown && !pressedCombo1Keys.includes(code) && oneOfCombo1;
-
-      if (condition) {
-        this.setState((prevState) => {
-          return { pressedCombo1Keys: prevState.pressedCombo1Keys.push(code) };
-        });
-      }
-
-      // Upon complete combo
-      if (pressedCombo1Keys.length === 3) {
-        const damage = playerOne.attack * 2;
-
-        this.setState((prevState) => {
-          const { playerTwoHealth, fightLog } = prevState;
-          const roundLog = this.makeRoundLog(1, damage, prevState);
-
-          const { log } = fightLog;
-          const newLogArray = [...log];
-          newLogArray.push(roundLog);
-
-          return {
-            playerTwoHealth: playerTwoHealth - damage,
-            pressedCombo1Keys: [],
-            playerOneCoolDown: true,
-            fightLog: {
-              log: newLogArray,
-            },
-          };
-        });
-      }
-
       // Player 2 combo
-
-      // Track if one of combo keys is pressed:
-      const oneOfCombo2 =
-        code === crit2[0] || code === crit2[1] || code === crit2[2];
-
-      // If pressed, add the key to player's combo array:
-      if (
-        !playerTwoCoolDown &&
-        oneOfCombo2 &&
-        !pressedCombo2Keys.includes(code)
-      ) {
-        this.setState((prevState) => {
-          return { pressedCombo2Keys: prevState.pressedCombo2Keys.push(code) };
-        });
-      }
-
-      // Upon complete combo
-      if (pressedCombo2Keys.length === 3) {
-        const damage = playerTwo.attack * 2;
-
-        this.setState((prevState) => {
-          const { playerOneHealth, fightLog } = prevState;
-
-          const roundLog = this.makeRoundLog(2, damage, prevState);
-
-          const { log } = fightLog;
-          const newLogArray = [...log];
-          newLogArray.push(roundLog);
-
-          return {
-            playerOneHealth: playerOneHealth - damage,
-            pressedCombo2Keys: [],
-            playerTwoCoolDown: true,
-            fightLog: {
-              log: newLogArray,
-            },
-          };
-        });
-      }
+      this.handleCombo(playerTwo, code);
     }
 
     if (type === 'keyup') {
       //
-      // Remove key code from the combo array on keyup - player 1
-      if (pressedCombo1Keys.includes(code)) {
-        const index = pressedCombo1Keys.indexOf(code);
+      // Remove key from player combo array on keyup
+      if (pressedComboOneKeys.includes(code))
+        handleComboKeyRelease(playerOne, code);
 
-        this.setState((prevState) => {
-          return {
-            pressedCombo1Keys: prevState.pressedCombo1Keys.splice(index, 1),
-          };
-        });
-      }
+      if (pressedComboTwoKeys.includes(code))
+        handleComboKeyRelease(playerTwo, code);
 
-      // Remove key code from the combo array on keyup - player 2
-      if (pressedCombo2Keys.includes(code)) {
-        const index = pressedCombo2Keys.indexOf(code);
-
-        this.setState((prevState) => {
-          return {
-            pressedCombo2Keys: prevState.pressedCombo2Keys.splice(index, 1),
-          };
-        });
-      }
-
-      // Lift block
+      // Release block
       if (code === PlayerOneBlock) this.setState({ playerOneBlocks: false });
+
       if (code === PlayerTwoBlock) this.setState({ PlayerTwoBlocks: false });
     }
-  };
+  }
 
   // **************** Render ****************
 
