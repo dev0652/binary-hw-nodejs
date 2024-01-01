@@ -374,10 +374,10 @@ class Arena extends Component {
       //
       // Remove key from player combo array on keyup
       if (pressedComboOneKeys.includes(code))
-        handleComboKeyRelease(playerOne, code);
+        this.handleComboKeyRelease(playerOne, code);
 
       if (pressedComboTwoKeys.includes(code))
-        handleComboKeyRelease(playerTwo, code);
+        this.handleComboKeyRelease(playerTwo, code);
 
       // Release block
       if (code === PlayerOneBlock) this.setState({ playerOneBlocks: false });
