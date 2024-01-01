@@ -166,23 +166,19 @@ class Arena extends Component {
   }
 
   getDamage(attacker, defender) {
-    let damage;
-
     const hitPower = this.getHitPower(attacker);
     const blockPower = this.getBlockPower(defender);
 
+    let damage = 0;
+
     if (hitPower > blockPower) {
       damage = hitPower - blockPower;
-    } else {
-      damage = 0;
     }
 
     return damage;
   }
 
   makeRoundLog(player, damage, prevState) {
-    // player: number
-
     const { playerOneHealth, playerTwoHealth } = prevState;
 
     // Dummy log object
