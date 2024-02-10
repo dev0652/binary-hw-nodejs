@@ -38,6 +38,8 @@ A power strike ability has a cooldown of 10 seconds.
 
 ## Installation and running
 
+Use nvm to install node 16.20.2
+
 Run commands
 
 ```

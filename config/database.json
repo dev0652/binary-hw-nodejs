@@ -1,0 +1,273 @@
+{
+  "users": [
+    {
+      "firstName": "Natalia",
+      "lastName": "Valko",
+      "email": "valko@gmail.com",
+      "phoneNumber": "+380987654321",
+      "password": "380987654321",
+      "id": "5bc799c6-ced0-4044-81db-2796a14dc4a9",
+      "createdAt": "2023-12-19T01:57:14.965Z"
+    },
+    {
+      "firstName": "Michael",
+      "lastName": "Aaron",
+      "email": "napeti4941@gmail.com",
+      "phoneNumber": "+380123456789",
+      "password": "380123456789",
+      "id": "30dad6b2-498c-4072-b144-388054920e14",
+      "createdAt": "2023-12-21T19:29:08.772Z"
+    },
+    {
+      "firstName": "Benjamin",
+      "lastName": "Franklin",
+      "email": "benjie@gmail.com",
+      "phoneNumber": "+380987654321",
+      "password": "12345678",
+      "id": "10b24211-41e1-44cd-9699-019257152f1c",
+      "createdAt": "2023-12-21T23:38:04.677Z",
+      "updatedAt": "2023-12-23T19:08:56.544Z"
+    },
+    {
+      "firstName": "Robert",
+      "lastName": "Oppenheimer",
+      "email": "oppy@gmail.com",
+      "phoneNumber": "+380997654321",
+      "password": "12345678",
+      "id": "16054018-ff98-47e5-9c46-a0fabb0e2bb6",
+      "createdAt": "2023-12-23T19:07:22.896Z"
+    }
+  ],
+  "fighters": [
+    {
+      "name": "Ryu",
+      "power": 100,
+      "defense": 10,
+      "health": 100,
+      "id": "6f56b2a5-c61d-42a5-9f00-bde97fa67494",
+      "createdAt": "2023-12-23T22:46:48.413Z",
+      "source": "https://media.giphy.com/media/kdHa4JvihB2gM/giphy.gif"
+    },
+    {
+      "name": "Dhalsim",
+      "power": 80,
+      "defense": 10,
+      "health": 80,
+      "id": "e1162c5d-b7ba-4a14-88f7-313b61326f7e",
+      "createdAt": "2023-12-24T11:12:28.283Z",
+      "source": "https://i.pinimg.com/originals/c0/53/f2/c053f2bce4d2375fee8741acfb35d44d.gif"
+    },
+    {
+      "name": "Guile",
+      "power": 90,
+      "defense": 8,
+      "health": 110,
+      "id": "ec16bf69-8d35-4691-92d9-ae89852946de",
+      "createdAt": "2023-12-24T11:12:41.627Z",
+      "source": "https://66.media.tumblr.com/tumblr_lq8g3548bC1qd0wh3o1_400.gif"
+    },
+    {
+      "name": "Zangief",
+      "power": 100,
+      "defense": 8,
+      "health": 120,
+      "id": "d203cf83-8a38-4fc2-90d3-c9427235de0f",
+      "createdAt": "2023-12-24T11:13:06.460Z",
+      "source": "https://media1.giphy.com/media/nlbIvY9K0jfAA/source.gif"
+    },
+    {
+      "name": "Ken",
+      "power": 80,
+      "defense": 7,
+      "health": 90,
+      "id": "0b2c697b-6d4d-427a-a92f-b50e4ccbf491",
+      "createdAt": "2023-12-24T11:13:22.349Z",
+      "source": "https://i.pinimg.com/originals/46/4b/36/464b36a7aecd988e3c51e56a823dbedc.gif"
+    },
+    {
+      "name": "Bison",
+      "power": 90,
+      "defense": 6,
+      "health": 120,
+      "id": "000e62b5-7abd-4f2b-ad00-7ffef72c5832",
+      "createdAt": "2023-12-24T11:13:36.270Z",
+      "source": "http://www.fightersgeneration.com/np5/char/ssf2hd/bison-hdstance.gif"
+    },
+    {
+      "name": "Karate Kurt",
+      "power": 80,
+      "defense": 8,
+      "health": 90,
+      "source": "https://media.giphy.com/media/kdHa4JvihB2gM/giphy.gif",
+      "id": "6aa9b54b-ba1e-4cc8-8353-1f0885d9f8b5",
+      "createdAt": "2023-12-25T10:33:41.285Z"
+    },
+    {
+      "name": "Michael Aaron",
+      "power": 50,
+      "defense": 50,
+      "health": 100,
+      "source": "https://media.giphy.com/media/kdHa4JvihB2gM/giphy.gif",
+      "id": "fea5feec-350f-49b8-a033-74b73da3fe4a",
+      "createdAt": "2023-12-26T11:01:14.614Z"
+    }
+  ],
+  "fights": [
+    {
+      "log": [
+        {
+          "fighter1Shot": 0,
+          "fighter2Shot": 15.01,
+          "fighter1Health": 84.99,
+          "fighter2Health": 120
+        },
+        {
+          "fighter1Shot": 16.28,
+          "fighter2Shot": 0,
+          "fighter1Health": 84.99,
+          "fighter2Health": 103.72
+        },
+        {
+          "fighter1Shot": 0,
+          "fighter2Shot": 18,
+          "fighter1Health": 66.99,
+          "fighter2Health": 103.72
+        },
+        {
+          "fighter1Shot": 0,
+          "fighter2Shot": 10.8,
+          "fighter1Health": 56.19,
+          "fighter2Health": 103.72
+        },
+        {
+          "fighter1Shot": 10.11,
+          "fighter2Shot": 0,
+          "fighter1Health": 56.19,
+          "fighter2Health": 93.61
+        },
+        {
+          "fighter1Shot": 11.86,
+          "fighter2Shot": 0,
+          "fighter1Health": 56.19,
+          "fighter2Health": 81.75
+        },
+        {
+          "fighter1Shot": 20,
+          "fighter2Shot": 0,
+          "fighter1Health": 56.19,
+          "fighter2Health": 61.75
+        },
+        {
+          "fighter1Shot": 11.32,
+          "fighter2Shot": 0,
+          "fighter1Health": 56.19,
+          "fighter2Health": 50.43
+        },
+        {
+          "fighter1Shot": 0,
+          "fighter2Shot": 15.38,
+          "fighter1Health": 40.81,
+          "fighter2Health": 50.43
+        },
+        {
+          "fighter1Shot": 10.27,
+          "fighter2Shot": 0,
+          "fighter1Health": 40.81,
+          "fighter2Health": 40.16
+        },
+        {
+          "fighter1Shot": 0,
+          "fighter2Shot": 14.88,
+          "fighter1Health": 25.93,
+          "fighter2Health": 40.16
+        },
+        {
+          "fighter1Shot": 15.14,
+          "fighter2Shot": 0,
+          "fighter1Health": 25.93,
+          "fighter2Health": 25.02
+        },
+        {
+          "fighter1Shot": 0,
+          "fighter2Shot": 9.04,
+          "fighter1Health": 16.89,
+          "fighter2Health": 25.02
+        },
+        {
+          "fighter1Shot": 15.09,
+          "fighter2Shot": 0,
+          "fighter1Health": 16.89,
+          "fighter2Health": 9.93
+        },
+        {
+          "fighter1Shot": 11.23,
+          "fighter2Shot": 0,
+          "fighter1Health": 16.89,
+          "fighter2Health": -1.3
+        }
+      ],
+      "id": "6b00f1a7-ecc3-46f1-8b78-6faeca6c211f",
+      "createdAt": "2024-01-01T16:04:08.957Z"
+    },
+    {
+      "log": [
+        {
+          "fighter1Shot": 16.94,
+          "fighter2Shot": 0,
+          "fighter1Health": 110,
+          "fighter2Health": 103.06
+        },
+        {
+          "fighter1Shot": 10.55,
+          "fighter2Shot": 0,
+          "fighter1Health": 110,
+          "fighter2Health": 92.51
+        },
+        {
+          "fighter1Shot": 11.29,
+          "fighter2Shot": 0,
+          "fighter1Health": 110,
+          "fighter2Health": 81.22
+        },
+        {
+          "fighter1Shot": 17.67,
+          "fighter2Shot": 0,
+          "fighter1Health": 110,
+          "fighter2Health": 63.55
+        },
+        {
+          "fighter1Shot": 15.61,
+          "fighter2Shot": 0,
+          "fighter1Health": 110,
+          "fighter2Health": 47.94
+        },
+        {
+          "fighter1Shot": 16.66,
+          "fighter2Shot": 0,
+          "fighter1Health": 110,
+          "fighter2Health": 31.28
+        },
+        {
+          "fighter1Shot": 10.68,
+          "fighter2Shot": 0,
+          "fighter1Health": 110,
+          "fighter2Health": 20.6
+        },
+        {
+          "fighter1Shot": 14.63,
+          "fighter2Shot": 0,
+          "fighter1Health": 110,
+          "fighter2Health": 5.97
+        },
+        {
+          "fighter1Shot": 13.46,
+          "fighter2Shot": 0,
+          "fighter1Health": 110,
+          "fighter2Health": -7.49
+        }
+      ],
+      "id": "2aaee732-f337-4814-a76b-4db2f691dbe0",
+      "createdAt": "2024-02-10T18:28:51.104Z"
+    }
+  ]
+}
